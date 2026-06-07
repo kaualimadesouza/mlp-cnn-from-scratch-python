@@ -1,6 +1,6 @@
 === Hiperparametros do Experimento ===
 
-Data do experimento:        2026-04-19 21:44:43
+Data do experimento:        2026-06-07 10:57:38
 
 Grupo:
   - Isabelle da Silva Tobias - NUSP 15525991 (T04)
@@ -33,7 +33,7 @@ Funcao de erro:             MSE (Erro Quadratico Medio)
 Algoritmo:                  Backpropagation com Gradiente Descendente
 
 --- Resultados Finais ---
-MSE inicial:   0.295928
-MSE final:     0.003340
+MSE inicial:   0.262582
+MSE final:     0.003655
 Acuracia:      100.00% (4/4)
-Tempo treino:  0.1s
+Tempo treino:  0.2s
