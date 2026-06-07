@@ -2,35 +2,6 @@ SHELL := /bin/bash
 .PHONY: install run-mlp run-cnn clean help
 .DEFAULT_GOAL := help
 
-GREEN  := \033[0;32m
-CYAN   := \033[0;36m
-DIM    := \033[2m
-RED    := \033[0;31m
-BOLD   := \033[1m
-NC     := \033[0m
-
-define run_with_spinner
-	$(2) > /dev/null 2>&1 & \
-	pid=$$!; \
-	spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'; \
-	i=0; \
-	start=$$(date +%s); \
-	while kill -0 $$pid 2>/dev/null; do \
-		i=$$(( (i+1) % 10 )); \
-		elapsed=$$(( $$(date +%s) - start )); \
-		printf "\r\033[K$(CYAN)  $${spin:$$i:1} $(1)$(DIM) ($${elapsed}s)$(NC)"; \
-		sleep 0.1; \
-	done; \
-	wait $$pid; \
-	elapsed=$$(( $$(date +%s) - start )); \
-	if [ $$? -eq 0 ]; then \
-		printf "\r\033[K$(GREEN)  ✓ $(1)$(DIM) ($${elapsed}s)$(NC)\n"; \
-	else \
-		printf "\r\033[K$(RED)  ✗ $(1)$(DIM) ($${elapsed}s)$(NC)\n"; \
-		exit 1; \
-	fi
-endef
-
 help:
 	@printf "$(BOLD)Comandos disponiveis:$(NC)\n"
 	@printf "  $(CYAN)make install$(NC)  - instala o uv, dependencias e hooks de pre-commit\n"
