@@ -10,7 +10,7 @@ Integrantes:
 import os
 from dataclasses import dataclass
 
-from value_objects import DataChoiceEnum
+from value_objects import DataChoiceEnum, MetodoValidacaoEnum
 
 
 @dataclass(frozen=True)
@@ -24,6 +24,11 @@ class HiperparametrosExperimento:
     taxa_aprendizado: float
     epocas: int
     num_neuronios_oculta: int
+    # Parada antecipada: para o treino apos N epocas seguidas sem melhora no
+    # MSE de validacao. None = desligada (treina as epocas completas).
+    paciencia: int | None = None
+    metodo_validacao: MetodoValidacaoEnum = MetodoValidacaoEnum.HOLD_OUT
+    k_folds: int | None = None  # so usado com CROSS_VALIDATION
 
 
 # Hiperparametros por dataset - tabela publica usada pelo main.
@@ -32,26 +37,49 @@ HIPERPARAMETROS: dict[DataChoiceEnum, HiperparametrosExperimento] = {
         taxa_aprendizado=0.4,
         epocas=500,
         num_neuronios_oculta=4,
+        paciencia=None,
     ),
     DataChoiceEnum.AND: HiperparametrosExperimento(
         taxa_aprendizado=0.4,
         epocas=500,
         num_neuronios_oculta=4,
+        paciencia=None,
     ),
     DataChoiceEnum.XOR: HiperparametrosExperimento(
         taxa_aprendizado=0.4,
         epocas=2000,
         num_neuronios_oculta=4,
+        paciencia=None,
     ),
     DataChoiceEnum.CARACTERES_REDUZIDO: HiperparametrosExperimento(
         taxa_aprendizado=0.2,
         epocas=500,
         num_neuronios_oculta=20,
+        paciencia=20,
+        metodo_validacao=MetodoValidacaoEnum.CROSS_VALIDATION,
+        k_folds=7,
     ),
     DataChoiceEnum.CARACTERES_COMPLETO: HiperparametrosExperimento(
         taxa_aprendizado=0.04,
-        epocas=100,
+        epocas=300,
         num_neuronios_oculta=55,
+        paciencia=15,
+        metodo_validacao=MetodoValidacaoEnum.CROSS_VALIDATION,
+        k_folds=5,
+    ),
+    # Variacao autoral: mesmos hiperparametros do COMPLETO (mesmo problema,
+    # so muda o conjunto de teste - ruido criado pelo grupo).
+    DataChoiceEnum.CARACTERES_COMPLETO_AUTORAL: HiperparametrosExperimento(
+        taxa_aprendizado=0.04,
+        epocas=300,
+        num_neuronios_oculta=55,
+        paciencia=15,
+    ),
+    DataChoiceEnum.IRIS: HiperparametrosExperimento(
+        taxa_aprendizado=0.2,
+        epocas=500,
+        num_neuronios_oculta=8,
+        paciencia=20,
     ),
 }
 

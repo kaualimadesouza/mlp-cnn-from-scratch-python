@@ -1,6 +1,6 @@
 === Hiperparametros do Experimento ===
 
-Data do experimento:        2026-06-07 12:33:42
+Data do experimento:        2026-06-07 15:40:05
 
 Grupo:
   - Isabelle da Silva Tobias - NUSP 15525991 (T04)
@@ -25,15 +25,16 @@ Total de parametros:        8,111 (6,600 + 55 + 1,430 + 26)
 
 --- Inicializacao ---
 Taxa aprendizado (alpha):   0.04
-Epocas:                     100
+Epocas:                     300
 Inicializacao dos pesos:    Xavier/Glorot - Uniforme [-L, +L], L=sqrt(6/(fan_in+fan_out))
 Inicializacao do bias:      0.0 (todos os neuronios)
-Condicao de parada:         Nenhuma (treina as N epocas completas)
+Condicao de parada:         Parada antecipada com paciencia=15 (15 epocas sem melhora no MSE de validacao)
 Funcao de erro:             MSE (Erro Quadratico Medio)
 Algoritmo:                  Backpropagation com Gradiente Descendente
 
 --- Resultados Finais ---
-MSE inicial:   1.048955
-MSE final:     0.089174
-Acuracia:      93.28% (125/134)
-Tempo treino:  52.9s
+Epocas executadas: 195 (teto: 300)
+MSE inicial:   1.060101
+MSE final:     0.038717
+Acuracia:      96.27% (129/134)
+Tempo treino:  121.2s

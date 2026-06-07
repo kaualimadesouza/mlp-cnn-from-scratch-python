@@ -135,12 +135,15 @@ class MLP:
         taxa_aprendizado: float,
         epocas: int,
         dados_validacao: list[Amostra] | None = None,
+        paciencia: int | None = None,
     ) -> tuple[list[float], list[float]]:
         """Treina por backpropagation e retorna (historico_treino, historico_validacao)."""
         historico_treino: list[float] = []
         historico_validacao: list[float] = []
         # padding pra alinhar numero da epoca no print
         largura = len(str(epocas))
+        epocas_sem_melhora = 0
+        melhor_mse_val = float("inf")
 
         for epoca in range(epocas):
             # Shuffle por epoca: evita decorar a ordem das amostras e ajuda generalizacao.
@@ -170,6 +173,17 @@ class MLP:
                 mse_val = erro_val / len(dados_validacao)
                 historico_validacao.append(mse_val)
                 msg_validacao = f"  |  Val: {mse_val:.6f}"
+
+                if mse_val < melhor_mse_val:
+                    melhor_mse_val = mse_val
+                    epocas_sem_melhora = 0
+                else:
+                    epocas_sem_melhora += 1
+                    if paciencia and epocas_sem_melhora >= paciencia:
+                        print(
+                            f"Parando por paciencia: {epocas_sem_melhora} epocas sem melhora no MSE de validacao."
+                        )
+                        break
 
             print(
                 f"Epoca {epoca + 1:>{largura}}/{epocas} - MSE: {mse_treino:.6f}{msg_validacao}"

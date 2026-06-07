@@ -14,13 +14,15 @@ from config import HIPERPARAMETROS, config
 from datasets import carregar_dados
 from entities import MLP, Camada, Neuronio
 from teste_de_mesa import rodar_teste_de_mesa
-from value_objects import DataChoiceEnum, Dataset
+from validacao import validacao_cruzada
+from value_objects import DataChoiceEnum, Dataset, MetodoValidacaoEnum
 
 from saidas import (
     ResultadoExperimento,
     acrescentar_resultados_finais,
     salvar_erro_por_epoca,
     salvar_grafico_mse,
+    salvar_grafico_validacao_cruzada,
     salvar_hiperparametros,
     salvar_matriz_confusao,
     salvar_pesos,
@@ -33,6 +35,9 @@ def run(
     taxa_aprendizado: float = 0.1,
     epocas: int = 1000,
     num_neuronios_oculta: int = 10,
+    paciencia: int | None = None,
+    metodo_validacao: MetodoValidacaoEnum = MetodoValidacaoEnum.HOLD_OUT,
+    k_folds: int | None = None,
 ) -> ResultadoExperimento:
     """Carrega os dados, treina e testa a MLP. Retorna um ResultadoExperimento."""
     # 1. Carregar os dados, de forma que ja fiquem no formato certo pra treinar a MLP.
@@ -56,6 +61,7 @@ def run(
         data_choice=data_choice,
         taxa_aprendizado=taxa_aprendizado,
         epocas=epocas,
+        paciencia=paciencia,
         caminho=caminho_hp,
     )
 
@@ -78,6 +84,28 @@ def run(
     print(f"Arquitetura: {' -> '.join(str(n) for n in arquitetura)} (sigmoide)")
     print(f"Taxa de aprendizado: {taxa_aprendizado}")
     print(f"Epocas: {epocas}")
+
+    # K-fold sobre treino+validacao (teste fica de fora); o modelo final
+    # continua sendo o do treino hold-out abaixo.
+    acuracias_cv = None
+    if metodo_validacao == MetodoValidacaoEnum.CROSS_VALIDATION:
+        if not k_folds:
+            raise ValueError("CROSS_VALIDATION exige k_folds definido no config")
+        print(f"\n--- Validacao cruzada ({k_folds}-fold) ---")
+        acuracias_cv = validacao_cruzada(
+            dataset.treino + dataset.validacao,
+            arquitetura,
+            taxa_aprendizado,
+            epocas,
+            k_folds,
+            paciencia,
+        )
+        media = sum(acuracias_cv) / len(acuracias_cv)
+        desvio = (
+            sum((a - media) ** 2 for a in acuracias_cv) / len(acuracias_cv)
+        ) ** 0.5
+        print(f"Acuracia media dos folds: {media:.2%} +- {desvio:.2%}")
+
     print("\n--- Treinamento ---")
 
     # 3. Treinar a MLP. Passa a validacao junto pra receber os dois historicos (treino+val).
@@ -87,6 +115,7 @@ def run(
         taxa_aprendizado,
         epocas,
         dados_validacao=dataset.validacao,
+        paciencia=paciencia,
     )
     tempo_treino = time.time() - t0
 
@@ -110,6 +139,7 @@ def run(
         historico_validacao=historico_validacao,
         resultados_teste=resultados,
         tempo_treino=tempo_treino,
+        acuracias_cv=acuracias_cv,
     )
 
 
@@ -118,6 +148,9 @@ def main(
     taxa_aprendizado: float = 0.1,
     epocas: int = 1000,
     num_neuronios_oculta: int = 10,
+    paciencia: int | None = None,
+    metodo_validacao: MetodoValidacaoEnum = MetodoValidacaoEnum.HOLD_OUT,
+    k_folds: int | None = None,
 ):
     """Executa o experimento e salva todos os arquivos de saida pedidos."""
     # TESTE_DE_MESA nao é um treino: roda a conferencia com o exemplo numerico
@@ -135,6 +168,9 @@ def main(
         taxa_aprendizado=taxa_aprendizado,
         epocas=epocas,
         num_neuronios_oculta=num_neuronios_oculta,
+        paciencia=paciencia,
+        metodo_validacao=metodo_validacao,
+        k_folds=k_folds,
     )
 
     prefixo = resultado.prefixo_arquivo
@@ -173,6 +209,11 @@ def main(
     salvar_matriz_confusao(resultado.resultados_teste, caminho_matriz)
     print(f"Matriz confusao:   {caminho_matriz}")
 
+    if resultado.acuracias_cv:
+        caminho_cv = config.caminho_saida(prefixo, "validacao_cruzada.png")
+        salvar_grafico_validacao_cruzada(resultado.acuracias_cv, caminho_cv)
+        print(f"Validacao cruzada: {caminho_cv}")
+
 
 if __name__ == "__main__":
     # Teste de mesa primeiro: valida a corretude do forward/backprop
@@ -185,4 +226,7 @@ if __name__ == "__main__":
             taxa_aprendizado=hp.taxa_aprendizado,
             epocas=hp.epocas,
             num_neuronios_oculta=hp.num_neuronios_oculta,
+            paciencia=hp.paciencia,
+            metodo_validacao=hp.metodo_validacao,
+            k_folds=hp.k_folds,
         )

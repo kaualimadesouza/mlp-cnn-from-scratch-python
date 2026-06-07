@@ -11,6 +11,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from config import config
 from entities import MLP, Camada
@@ -37,6 +38,7 @@ class ResultadoExperimento:
     historico_validacao: list[float]  # MSE de validacao por epoca
     resultados_teste: list[ResultadoTeste]
     tempo_treino: float
+    acuracias_cv: list[float] | None = None  # acuracia por fold (se houve CV)
 
     @property
     def prefixo_arquivo(self) -> str:
@@ -74,6 +76,11 @@ def _descrever_split(data_choice: DataChoiceEnum) -> str:
         return "80/10/10 (treino/validacao/teste) com shuffle sobre pool de limpo+ruido+ruido20"
     if data_choice == DataChoiceEnum.CARACTERES_COMPLETO:
         return "80/10/10 (treino/validacao/teste) com shuffle previo aleatorio"
+    if data_choice == DataChoiceEnum.CARACTERES_COMPLETO_AUTORAL:
+        return (
+            "80/10/10: treino/validacao nos dados ORIGINAIS; teste na variacao "
+            "AUTORAL (10% dos pixels invertidos, gerada pelo grupo)"
+        )
     return "(desconhecido)"
 
 
@@ -95,6 +102,7 @@ def salvar_hiperparametros(
     taxa_aprendizado: float,
     epocas: int,
     caminho: str,
+    paciencia: int | None = None,
 ) -> None:
     """Salva hiperparametros da arquitetura + inicializacao (requisito da especificacao)."""
     num_entradas = mlp.tamanhos_camadas[0]
@@ -158,7 +166,15 @@ def salvar_hiperparametros(
             "Inicializacao dos pesos:    Xavier/Glorot - Uniforme [-L, +L], L=sqrt(6/(fan_in+fan_out))\n"
         )
         f.write("Inicializacao do bias:      0.0 (todos os neuronios)\n")
-        f.write("Condicao de parada:         Nenhuma (treina as N epocas completas)\n")
+        if paciencia:
+            f.write(
+                f"Condicao de parada:         Parada antecipada com paciencia={paciencia} "
+                f"({paciencia} epocas sem melhora no MSE de validacao)\n"
+            )
+        else:
+            f.write(
+                "Condicao de parada:         Nenhuma (treina as N epocas completas)\n"
+            )
         f.write("Funcao de erro:             MSE (Erro Quadratico Medio)\n")
         f.write(
             "Algoritmo:                  Backpropagation com Gradiente Descendente\n"
@@ -171,6 +187,10 @@ def acrescentar_resultados_finais(
     """Acrescenta os resultados do treino/teste no final do arquivo de hiperparametros."""
     with open(caminho, "a") as f:
         f.write("\n--- Resultados Finais ---\n")
+        # Com parada antecipada, o treino pode ter parado antes do teto de epocas.
+        f.write(
+            f"Epocas executadas: {len(resultado.historico_erro)} (teto: {resultado.epocas})\n"
+        )
         f.write(f"MSE inicial:   {resultado.historico_erro[0]:.6f}\n")
         f.write(f"MSE final:     {resultado.historico_erro[-1]:.6f}\n")
         f.write(
@@ -284,6 +304,49 @@ def salvar_grafico_mse(resultado: ResultadoExperimento, caminho: str) -> None:
     if pasta:
         os.makedirs(pasta, exist_ok=True)
 
+    fig.savefig(caminho, dpi=100)
+    plt.close(fig)
+
+
+def salvar_grafico_validacao_cruzada(acuracias: list[float], caminho: str) -> None:
+    """Diagrama k-fold: cada linha é uma rodada e o bloco verde é a validacao."""
+    k = len(acuracias)
+    media = sum(acuracias) / k
+    desvio = (sum((a - media) ** 2 for a in acuracias) / k) ** 0.5
+
+    fig, ax = plt.subplots(figsize=(9, 0.7 * k + 1.5))
+    for fold in range(k):
+        for bloco in range(k):
+            cor = "#b6dbb0" if bloco == fold else "#f7dc94"
+            ax.barh(
+                fold, 1 / k, left=bloco / k, color=cor, edgecolor="#777", height=0.72
+            )
+        # acuracia da rodada escrita dentro do bloco de validacao
+        ax.text(
+            fold / k + 1 / (2 * k),
+            fold,
+            f"{acuracias[fold]:.0%}",
+            ha="center",
+            va="center",
+            fontsize=10,
+            fontweight="bold",
+        )
+
+    ax.set_yticks(range(k))
+    ax.set_yticklabels([f"Fold {i + 1}" for i in range(k)])
+    ax.invert_yaxis()
+    ax.set_xticks([])
+    ax.set_xlim(0, 1)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    legenda = [
+        mpatches.Patch(facecolor="#f7dc94", edgecolor="#777", label="Treino"),
+        mpatches.Patch(facecolor="#b6dbb0", edgecolor="#777", label="Validacao"),
+    ]
+    ax.legend(handles=legenda, loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=2)
+    ax.set_title(f"Validacao Cruzada ({k}-fold)  -  media {media:.2%} +- {desvio:.2%}")
+    fig.tight_layout()
     fig.savefig(caminho, dpi=100)
     plt.close(fig)
 

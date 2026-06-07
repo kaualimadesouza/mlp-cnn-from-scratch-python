@@ -42,6 +42,11 @@ class ResultadoTeste:
     acerto: bool
 
 
+class MetodoValidacaoEnum(Enum):
+    HOLD_OUT = "HOLD_OUT"
+    CROSS_VALIDATION = "CROSS_VALIDATION"
+
+
 class DataChoiceEnum(Enum):
     # Conferencia com o exemplo numerico da professora (nao é um treino):
     # fica em primeiro pra validar a corretude do forward/backprop antes
@@ -52,3 +57,7 @@ class DataChoiceEnum(Enum):
     XOR = "XOR"
     CARACTERES_REDUZIDO = "CARACTERES_REDUZIDO"
     CARACTERES_COMPLETO = "CARACTERES_COMPLETO"
+    # Variacao AUTORAL: treina/valida nos dados originais e testa na versao
+    # com ruido criado pelo grupo (10% dos pixels invertidos, seed fixa).
+    CARACTERES_COMPLETO_AUTORAL = "CARACTERES_COMPLETO_AUTORAL"
+    IRIS = "IRIS"

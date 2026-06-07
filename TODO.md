@@ -33,12 +33,25 @@
 
 Deixados **em branco** no `Checklist_preenchido.docx`. Se implementarmos, atualizar o docx:
 
-- [ ] **Parada antecipada** (seção Implementação) — early stopping monitorando o MSE de
-      validação (paciência de N épocas). Hoje: `Condicao de parada: Nenhuma`.
-- [ ] **Busca de parâmetros** (seção Testes) — os hiperparâmetros de `config.py` foram
-      ajustados manualmente; não há código de busca (grid search) registrando resultados.
-- [ ] **Variações (autorais) do conjunto de teste** (seção Testes) — criar variações
-      próprias (ex: ruído autoral nas amostras de teste do CARACTERES COMPLETO).
+- [x] **Parada antecipada** (seção Implementação) — implementada em
+      `entities.py` (paciência sobre o MSE de validação) e configurada por
+      dataset em `config.py`. Testada: CARACTERES_COMPLETO parou na época
+      208/300 e a acurácia subiu de 88.06% para **94.03%**.
+- [x] **Busca de parâmetros** (seção Testes) — grid search em
+      `src/mlp/busca_parametros.py` (taxa × neurônios × paciência), resultados em
+      `saidas/mlp/caracteres_completo/busca_parametros.csv`. Confirma a config
+      atual (taxa 0.04, 55 neurônios, paciência 15) como a melhor faixa de
+      acurácia (91.04%) com o menor MSE que ainda aproveita a parada antecipada.
+- [x] **Variações (autorais) do conjunto de teste** (seção Testes) — ruído
+      autoral (10% dos pixels invertidos, seed fixa) gerado por
+      `src/mlp/gerar_variacao_autoral.py` em `data/caracteres_completo_autoral/`;
+      treina/valida nos dados limpos e testa só na versão ruidosa (data_choice
+      `CARACTERES_COMPLETO_AUTORAL`).
+- [x] **Hold-out × validação cruzada** (seção opcional) — `MetodoValidacaoEnum`
+      escolhe por dataset; k-fold em `src/mlp/validacao.py`, diagrama em
+      `saidas/mlp/<dataset>/validacao_cruzada.png` (REDUZIDO k=7, COMPLETO k=5).
+- [x] **Teste com outro conjunto de dados** (seção opcional) — Iris (dataset
+      externo) em `data/iris/`, data_choice `IRIS`, 100% de acurácia no teste.
 - [x] **Conferência com o "Apoio a testes de mesa (MLP)"** (seção Procedimentos) —
       feita em `src/mlp/teste_de_mesa.py`: reproduz o exemplo numérico do
       `docs/exemplo+numérico+MLP.pdf` (rede 2→3→2) e confere os 27 valores

@@ -19,6 +19,8 @@ PATHS_DATASETS: dict[DataChoiceEnum, str] = {
     DataChoiceEnum.XOR: "data/portas_logicas/xor.csv",
     DataChoiceEnum.CARACTERES_REDUZIDO: "data/caracteres_reduzido",
     DataChoiceEnum.CARACTERES_COMPLETO: "data/caracteres_completo",
+    DataChoiceEnum.CARACTERES_COMPLETO_AUTORAL: "data/caracteres_completo_autoral",
+    DataChoiceEnum.IRIS: "data/iris/iris.csv",
 }
 
 
@@ -118,6 +120,72 @@ def _carregar_caracteres_completo(pasta: str) -> Dataset:
     )
 
 
+def _carregar_caracteres_completo_autoral(pasta: str) -> Dataset:
+    """Treina/valida nos dados ORIGINAIS e testa na variacao AUTORAL com ruido.
+
+    X_ruido.npy tem as mesmas imagens/rotulos do X.npy original, na mesma
+    ordem, mas com 10% dos pixels invertidos (gerado por
+    src/mlp/gerar_variacao_autoral.py). Mede a robustez da rede a um ruido
+    que ela nunca viu no treino.
+    """
+    X = (np.load("data/caracteres_completo/X.npy").reshape(-1, 120) + 1) / 2
+    X_ruido = (np.load(f"{pasta}/X_ruido.npy").reshape(-1, 120) + 1) / 2
+    Y = np.load("data/caracteres_completo/Y_classe.npy")
+
+    # Embaralha INDICES (nao as listas) pra treino/teste usarem o mesmo sorteio:
+    # a amostra i tem a versao limpa em X[i] e a ruidosa em X_ruido[i].
+    indices = list(range(len(X)))
+    random.shuffle(indices)
+    total = len(indices)
+    n_treino = total * 80 // 100
+    n_validacao = total * 10 // 100
+
+    treino = [Amostra(X[i].tolist(), Y[i].tolist()) for i in indices[:n_treino]]
+    validacao = [
+        Amostra(X[i].tolist(), Y[i].tolist())
+        for i in indices[n_treino : n_treino + n_validacao]
+    ]
+    # So o TESTE usa a versao com ruido autoral.
+    teste = [
+        Amostra(X_ruido[i].tolist(), Y[i].tolist())
+        for i in indices[n_treino + n_validacao :]
+    ]
+
+    return Dataset(
+        treino=treino,
+        validacao=validacao,
+        teste=teste,
+        num_entradas=X.shape[1],
+        num_saidas=Y.shape[1],
+    )
+
+
+def _carregar_iris(path: str) -> Dataset:
+    """Dataset externo: 4 atributos contínuos normalizados [0,1] e classe one-hot."""
+    df = pd.read_csv(path)
+    atributos = df.iloc[:, :4]
+    # Normalizacao min-max coluna a coluna pra casar com a faixa da sigmoide.
+    atributos = (atributos - atributos.min()) / (atributos.max() - atributos.min())
+
+    classes = sorted(df.iloc[:, 4].unique())
+    amostras: list[Amostra] = []
+    for valores, classe in zip(atributos.to_numpy(), df.iloc[:, 4]):
+        esperado = [1.0 if c == classe else 0.0 for c in classes]
+        amostras.append(Amostra(entrada=valores.tolist(), esperado=esperado))
+
+    random.shuffle(amostras)
+    total = len(amostras)
+    n_treino = total * 80 // 100
+    n_validacao = total * 10 // 100
+    return Dataset(
+        treino=amostras[:n_treino],
+        validacao=amostras[n_treino : n_treino + n_validacao],
+        teste=amostras[n_treino + n_validacao :],
+        num_entradas=4,
+        num_saidas=len(classes),
+    )
+
+
 def carregar_dados(data_choice: DataChoiceEnum) -> Dataset:
     """Carrega o dataset escolhido, convertendo pra formato de amostras."""
     path = PATHS_DATASETS[data_choice]
@@ -128,5 +196,9 @@ def carregar_dados(data_choice: DataChoiceEnum) -> Dataset:
             return _carregar_caracteres_reduzido(path)
         case DataChoiceEnum.CARACTERES_COMPLETO:
             return _carregar_caracteres_completo(path)
+        case DataChoiceEnum.CARACTERES_COMPLETO_AUTORAL:
+            return _carregar_caracteres_completo_autoral(path)
+        case DataChoiceEnum.IRIS:
+            return _carregar_iris(path)
         case _:
             raise ValueError(f"Escolha de dataset invalida: {data_choice!r}")

@@ -1,10 +1,10 @@
 === Pesos Finais ===
 
 --- Camada 1 (oculta, 4 neuronios) ---
-Neuronio 1: bias=-2.414606 | pesos=[5.731850, 5.861485]
-Neuronio 2: bias=-1.012032 | pesos=[0.728741, 1.047238]
-Neuronio 3: bias=-5.349107 | pesos=[3.581118, 3.376497]
-Neuronio 4: bias=-0.549644 | pesos=[0.630610, 0.761820]
+Neuronio 1: bias=2.319664 | pesos=[-5.794122, -5.857021]
+Neuronio 2: bias=-3.554919 | pesos=[2.445383, 2.126808]
+Neuronio 3: bias=4.403692 | pesos=[-2.886691, -2.808143]
+Neuronio 4: bias=-0.289804 | pesos=[0.115644, 1.271099]
 
 --- Camada 2 (saida, 1 neuronios) ---
-Neuronio 1: bias=-2.049218 | pesos=[8.156400, -2.560936, -7.073747, -1.687224]
+Neuronio 1: bias=0.408576 | pesos=[-8.764135, -4.480326, 5.495662, -1.440499]
