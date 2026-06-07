@@ -1,6 +1,6 @@
 === Hiperparametros do Experimento ===
 
-Data do experimento:        2026-06-07 12:29:45
+Data do experimento:        2026-06-07 12:33:37
 
 Grupo:
   - Isabelle da Silva Tobias - NUSP 15525991 (T04)
@@ -31,3 +31,9 @@ Inicializacao do bias:      0.0 (todos os neuronios)
 Condicao de parada:         Nenhuma (treina as N epocas completas)
 Funcao de erro:             MSE (Erro Quadratico Medio)
 Algoritmo:                  Backpropagation com Gradiente Descendente
+
+--- Resultados Finais ---
+MSE inicial:   0.438475
+MSE final:     0.004838
+Acuracia:      100.00% (4/4)
+Tempo treino:  0.0s
