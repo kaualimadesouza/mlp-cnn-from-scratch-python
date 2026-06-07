@@ -13,6 +13,7 @@ import time
 from config import HIPERPARAMETROS, config
 from datasets import carregar_dados
 from entities import MLP, Camada, Neuronio
+from teste_de_mesa import rodar_teste_de_mesa
 from value_objects import DataChoiceEnum, Dataset
 
 from saidas import (
@@ -119,6 +120,13 @@ def main(
     num_neuronios_oculta: int = 10,
 ):
     """Executa o experimento e salva todos os arquivos de saida pedidos."""
+    # TESTE_DE_MESA nao é um treino: roda a conferencia com o exemplo numerico
+    # da professora (forward + backprop unicos) e nao gera arquivos de saida.
+    if data_choice == DataChoiceEnum.TESTE_DE_MESA:
+        print("--- Teste de mesa (conferencia com docs/exemplo+numérico+MLP.pdf) ---")
+        rodar_teste_de_mesa()
+        return
+
     os.makedirs(config.pasta_saidas, exist_ok=True)
 
     # Executa o experimento completo (carregar dados, treinar, testar).
@@ -167,8 +175,11 @@ def main(
 
 
 if __name__ == "__main__":
-    for data_choice_escolha in DataChoiceEnum:
-        hp = HIPERPARAMETROS[data_choice_escolha]
+    # Teste de mesa primeiro: valida a corretude do forward/backprop
+    main(data_choice=DataChoiceEnum.TESTE_DE_MESA)
+
+    # Depois, um experimento completo (treino + teste) por dataset.
+    for data_choice_escolha, hp in HIPERPARAMETROS.items():
         main(
             data_choice=data_choice_escolha,
             taxa_aprendizado=hp.taxa_aprendizado,

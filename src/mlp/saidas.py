@@ -183,7 +183,7 @@ def acrescentar_resultados_finais(
 def salvar_pesos(camadas: list[Camada], titulo: str, caminho: str) -> None:
     """Salva os pesos e bias de cada neuronio em texto, camada por camada.
 
-    Funciona tanto pra pesos iniciais quanto finais - e' so passar o snapshot
+    Funciona tanto pra pesos iniciais quanto finais - é so passar o snapshot
     certo (resultado.camadas_iniciais ou resultado.mlp.camadas) e o titulo.
     """
     with open(caminho, "w") as f:

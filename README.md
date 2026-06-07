@@ -24,6 +24,7 @@ EP_IA_MLP_CNN/
 │   ├── mlp/                # Objetivo 1: MLP from scratch
 │   │   ├── main.py         # run() + main() + entry point (orquestracao)
 │   │   ├── entities.py     # Neuronio, Camada, MLP (forward, backprop)
+│   │   ├── teste_de_mesa.py # conferencia com o exemplo numerico da professora
 │   │   ├── datasets.py     # carregamento dos datasets
 │   │   ├── saidas.py       # ResultadoExperimento + funcoes salvar_* (txt/csv/png)
 │   │   ├── config.py       # hiperparametros por dataset
@@ -57,7 +58,7 @@ Isso instala o uv (se precisar), cria o `.venv`, instala dependencias e configur
 make run-mlp
 ```
 
-Roda treinamento + teste pros 5 datasets em sequencia (OR, AND, XOR, CARACTERES_REDUZIDO, CARACTERES_COMPLETO). Os hiperparametros de cada dataset estao em `src/mlp/config.py`.
+Roda primeiro o **teste de mesa** (conferencia do forward/backprop com o exemplo numerico de `docs/exemplo+numérico+MLP.pdf`) e depois treinamento + teste pros 5 datasets em sequencia (OR, AND, XOR, CARACTERES_REDUZIDO, CARACTERES_COMPLETO). Os hiperparametros de cada dataset estao em `src/mlp/config.py`.
 
 Alternativamente, com o venv ativo:
 

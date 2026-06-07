@@ -43,6 +43,10 @@ class ResultadoTeste:
 
 
 class DataChoiceEnum(Enum):
+    # Conferencia com o exemplo numerico da professora (nao é um treino):
+    # fica em primeiro pra validar a corretude do forward/backprop antes
+    # de rodar os treinos de verdade.
+    TESTE_DE_MESA = "TESTE_DE_MESA"
     OR = "OR"
     AND = "AND"
     XOR = "XOR"
