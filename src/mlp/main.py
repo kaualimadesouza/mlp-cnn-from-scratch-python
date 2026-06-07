@@ -13,18 +13,20 @@ import time
 from config import HIPERPARAMETROS, config
 from datasets import carregar_dados
 from entities import MLP, Camada, Neuronio
+from graficos import (
+    salvar_grafico_mse,
+    salvar_grafico_validacao_cruzada,
+    salvar_matriz_confusao,
+)
+from resultado import ResultadoExperimento
 from teste_de_mesa import rodar_teste_de_mesa
 from validacao import validacao_cruzada
 from value_objects import DataChoiceEnum, Dataset, MetodoValidacaoEnum
 
 from saidas import (
-    ResultadoExperimento,
     acrescentar_resultados_finais,
     salvar_erro_por_epoca,
-    salvar_grafico_mse,
-    salvar_grafico_validacao_cruzada,
     salvar_hiperparametros,
-    salvar_matriz_confusao,
     salvar_pesos,
     salvar_saidas_teste,
 )
