@@ -219,16 +219,15 @@ def main(
 
 if __name__ == "__main__":
     # Teste de mesa primeiro: valida a corretude do forward/backprop
-    main(data_choice=DataChoiceEnum.TESTE_DE_MESA)
+    # main(data_choice=DataChoiceEnum.TESTE_DE_MESA)
+    hp = HIPERPARAMETROS[DataChoiceEnum.CARACTERES_COMPLETO]
 
-    # Depois, um experimento completo (treino + teste) por dataset.
-    for data_choice_escolha, hp in HIPERPARAMETROS.items():
-        main(
-            data_choice=data_choice_escolha,
-            taxa_aprendizado=hp.taxa_aprendizado,
-            epocas=hp.epocas,
-            num_neuronios_oculta=hp.num_neuronios_oculta,
-            paciencia=hp.paciencia,
-            metodo_validacao=hp.metodo_validacao,
-            k_folds=hp.k_folds,
-        )
+    main(
+        data_choice=DataChoiceEnum.CARACTERES_COMPLETO,
+        taxa_aprendizado=hp.taxa_aprendizado,
+        epocas=hp.epocas,
+        num_neuronios_oculta=hp.num_neuronios_oculta,
+        paciencia=hp.paciencia,
+        metodo_validacao=hp.metodo_validacao,
+        k_folds=hp.k_folds,
+    )

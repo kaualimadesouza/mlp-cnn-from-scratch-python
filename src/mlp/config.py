@@ -63,9 +63,7 @@ HIPERPARAMETROS: dict[DataChoiceEnum, HiperparametrosExperimento] = {
         taxa_aprendizado=0.04,
         epocas=300,
         num_neuronios_oculta=55,
-        paciencia=15,
-        metodo_validacao=MetodoValidacaoEnum.CROSS_VALIDATION,
-        k_folds=5,
+        paciencia=None,
     ),
     # Variacao autoral: mesmos hiperparametros do COMPLETO (mesmo problema,
     # so muda o conjunto de teste - ruido criado pelo grupo).
