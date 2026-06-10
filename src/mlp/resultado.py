@@ -28,12 +28,12 @@ class ResultadoExperimento:
     epocas: int
     num_neuronios_oculta: int
     mlp: MLP
-    camadas_iniciais: list[Camada]  # snapshot dos pesos ANTES do treino
-    historico_erro: list[float]  # MSE de treino por epoca
-    historico_validacao: list[float]  # MSE de validacao por epoca
+    camadas_iniciais: list[Camada]
+    historico_erro: list[float]
+    historico_validacao: list[float]
     resultados_teste: list[ResultadoTeste]
     tempo_treino: float
-    acuracias_cv: list[float] | None = None  # acuracia por fold (se houve CV)
+    acuracias_cv: list[float] | None = None
 
     @property
     def prefixo_arquivo(self) -> str:

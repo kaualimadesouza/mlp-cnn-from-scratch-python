@@ -78,7 +78,7 @@ def salvar_grafico_mse(resultado: ResultadoExperimento, caminho: str) -> None:
     ax.set_ylabel("MSE", fontsize=11)
     ax.grid(True, linestyle=":", alpha=0.5)
     ax.legend(loc="upper right", fontsize=10)
-    fig.tight_layout(rect=[0, 0, 1, 0.96])  # deixa espaco pro suptitle
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
 
     pasta = os.path.dirname(caminho)
     if pasta:

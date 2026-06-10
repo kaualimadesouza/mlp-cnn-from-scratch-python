@@ -87,8 +87,8 @@ def run(
     print(f"Taxa de aprendizado: {taxa_aprendizado}")
     print(f"Epocas: {epocas}")
 
-    # K-fold sobre treino+validacao (teste fica de fora); o modelo final
-    # continua sendo o do treino hold-out abaixo.
+    # K-fold sobre treino+validacao (teste fica de fora)
+    # o modelo final continua sendo o do treino hold-out abaixo.
     acuracias_cv = None
     if metodo_validacao == MetodoValidacaoEnum.CROSS_VALIDATION:
         if not k_folds:
@@ -218,8 +218,6 @@ def main(
 
 
 if __name__ == "__main__":
-    # Teste de mesa primeiro: valida a corretude do forward/backprop
-    # main(data_choice=DataChoiceEnum.TESTE_DE_MESA)
     hp = HIPERPARAMETROS[DataChoiceEnum.CARACTERES_COMPLETO]
 
     main(

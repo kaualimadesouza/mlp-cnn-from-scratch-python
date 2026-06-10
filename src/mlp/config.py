@@ -24,11 +24,9 @@ class HiperparametrosExperimento:
     taxa_aprendizado: float
     epocas: int
     num_neuronios_oculta: int
-    # Parada antecipada: para o treino apos N epocas seguidas sem melhora no
-    # MSE de validacao. None = desligada (treina as epocas completas).
     paciencia: int | None = None
     metodo_validacao: MetodoValidacaoEnum = MetodoValidacaoEnum.HOLD_OUT
-    k_folds: int | None = None  # so usado com CROSS_VALIDATION
+    k_folds: int | None = None
 
 
 # Hiperparametros por dataset - tabela publica usada pelo main.
@@ -65,8 +63,6 @@ HIPERPARAMETROS: dict[DataChoiceEnum, HiperparametrosExperimento] = {
         num_neuronios_oculta=55,
         paciencia=None,
     ),
-    # Variacao autoral: mesmos hiperparametros do COMPLETO (mesmo problema,
-    # so muda o conjunto de teste - ruido criado pelo grupo).
     DataChoiceEnum.CARACTERES_COMPLETO_AUTORAL: HiperparametrosExperimento(
         taxa_aprendizado=0.04,
         epocas=300,

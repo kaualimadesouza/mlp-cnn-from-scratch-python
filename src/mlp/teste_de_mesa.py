@@ -13,7 +13,16 @@ Integrantes:
 - Victor Yodono            - NUSP 13829040 (T94)
 """
 
+from dataclasses import dataclass
+
 from entities import MLP
+
+
+@dataclass
+class Conferencia:
+    nome: str
+    obtidos: list[float]
+    esperados: list[float]
 
 
 def _montar_rede_do_pdf() -> MLP:
@@ -30,21 +39,25 @@ def _montar_rede_do_pdf() -> MLP:
     return mlp
 
 
-def _conferencias(mlp: MLP) -> list[tuple[str, list[float], list[float]]]:
+def _conferencias(mlp: MLP) -> list[Conferencia]:
     """Lista (nome, valores obtidos pela nossa MLP, valores esperados no PDF)."""
     oculta, saida = mlp.camadas
     return [
-        ("z_j", [n.saida for n in oculta.neuronios], [0.4750, 0.5250, 0.4750]),
-        ("y_k", [n.saida for n in saida.neuronios], [0.4988, 0.5144]),
-        ("delta_k", [n.delta for n in saida.neuronios], [0.1253, -0.1285]),
-        ("delta_j^h", [n.delta for n in oculta.neuronios], [0.0063, -0.0032, 0.0063]),
-        (
-            "pesos W",  # por neuronio: w_0k (bias), w_1k, w_2k, w_3k
+        Conferencia(
+            "z_j", [n.saida for n in oculta.neuronios], [0.4750, 0.5250, 0.4750]
+        ),
+        Conferencia("y_k", [n.saida for n in saida.neuronios], [0.4988, 0.5144]),
+        Conferencia("delta_k", [n.delta for n in saida.neuronios], [0.1253, -0.1285]),
+        Conferencia(
+            "delta_j^h", [n.delta for n in oculta.neuronios], [0.0063, -0.0032, 0.0063]
+        ),
+        Conferencia(
+            "pesos W",
             [p for n in saida.neuronios for p in [n.bias, *n.pesos]],
             [-0.0373, 0.1298, 0.0329, 0.1298, 0.0358, -0.1305, 0.0663, -0.1305],
         ),
-        (
-            "pesos V",  # por neuronio: v_0j (bias), v_1j, v_2j
+        Conferencia(
+            "pesos V",
             [p for n in oculta.neuronios for p in [n.bias, *n.pesos]],
             [
                 -0.0968,
@@ -71,13 +84,16 @@ def rodar_teste_de_mesa() -> None:
     mlp.backpropagation([1.0, 0.0], taxa_aprendizado=0.5)
 
     falhas = 0
-    for nome, obtidos, esperados in _conferencias(mlp):
-        for obtido, esperado in zip(obtidos, esperados, strict=True):
+    for conferencia in _conferencias(mlp):
+        for obtido, esperado in zip(
+            conferencia.obtidos, conferencia.esperados, strict=True
+        ):
             ok = abs(obtido - esperado) <= 2e-4
             falhas += not ok
             status = "OK " if ok else "ERRO"
             print(
-                f"  [{status}] {nome:<9} obtido={obtido:+.4f}  esperado={esperado:+.4f}"
+                f"  [{status}] {conferencia.nome:<9} "
+                f"obtido={obtido:+.4f}  esperado={esperado:+.4f}"
             )
 
     if falhas:

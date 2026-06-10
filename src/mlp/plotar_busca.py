@@ -12,7 +12,6 @@ Integrantes:
 """
 
 import csv
-import sys
 
 import matplotlib
 
@@ -99,4 +98,4 @@ def main(top_n: int = 15) -> None:
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[1]) if len(sys.argv) > 1 else 15)
+    main(15)

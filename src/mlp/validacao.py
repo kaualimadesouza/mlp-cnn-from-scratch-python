@@ -28,7 +28,7 @@ def validacao_cruzada(
     paciencia: int | None = None,
 ) -> list[float]:
     """Roda o k-fold e retorna a lista com a acuracia de cada fold."""
-    amostras = list(amostras)  # copia pra nao bagunçar a lista do chamador
+    amostras = list(amostras)
     random.shuffle(amostras)
     # Fold i = amostras nas posicoes i, i+k, i+2k... (tamanhos quase iguais).
     folds = [amostras[i::k] for i in range(k)]

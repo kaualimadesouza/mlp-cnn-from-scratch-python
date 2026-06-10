@@ -41,7 +41,7 @@ def simular_parada(hist_val: list[float], paciencia: int) -> int:
             sem_melhora += 1
             if sem_melhora >= paciencia:
                 return i + 1
-    return len(hist_val)  # paciencia nunca estourou: treinou ate o teto
+    return len(hist_val)
 
 
 def avaliar(dataset: Dataset, taxa: float, neuronios: int) -> list[tuple]:
@@ -85,7 +85,7 @@ def salvar_csv(resultados: list[tuple], caminho: str) -> None:
 
 
 def main() -> None:
-    random.seed(42)  # busca reproduzivel
+    random.seed(42)
     # Carrega UMA vez: todas as combinacoes usam o mesmo split (comparacao justa).
     dataset = carregar_dados(DataChoiceEnum.CARACTERES_COMPLETO)
 
