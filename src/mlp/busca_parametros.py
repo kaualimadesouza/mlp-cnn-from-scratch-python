@@ -26,7 +26,7 @@ from value_objects import DataChoiceEnum, Dataset
 
 TAXAS = [0.01, 0.02, 0.04, 0.07, 0.1]
 NEURONIOS = [20, 40, 55, 70, 90]
-EPOCAS = 300  # orcamento por treino; as paciencias sao simuladas sobre a curva
+EPOCAS = 300
 PACIENCIAS = [5, 10, 15, 20, 30]
 
 
@@ -48,8 +48,10 @@ def avaliar(dataset: Dataset, taxa: float, neuronios: int) -> list[tuple]:
     """Treina UMA vez (curva completa) e simula cada paciencia sobre a curva.
 
     Retorna uma tupla (mse_val, taxa, neuronios, paciencia, epoca_parada,
-    acuracia) por paciencia. A acuracia é da rede com o treino completo -
+    acuracia, tempo) por paciencia. A acuracia é da rede com o treino completo -
     serve so de conferencia; o ranking usa o MSE de validacao no corte.
+    O tempo de cada corte = epoca_parada x tempo/epoca medido (o custo por
+    epoca e constante, entao o tempo ate o corte e proporcional as epocas).
     """
     mlp = MLP([dataset.num_entradas, neuronios, dataset.num_saidas])
     t0 = time.perf_counter()

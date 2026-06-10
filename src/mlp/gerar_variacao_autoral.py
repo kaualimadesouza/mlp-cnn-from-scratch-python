@@ -22,13 +22,13 @@ import random
 
 import numpy as np
 
-TAXA_RUIDO = 0.10  # fracao dos 120 pixels invertidos por imagem (12 pixels)
+TAXA_RUIDO = 0.10
 
-random.seed(42)  # reproduzivel: rodar de novo gera exatamente o mesmo arquivo
+random.seed(42)
 
 # X.npy original: (N, 10, 12, 1) em bipolar {-1, +1}.
 X = np.load("data/caracteres_completo/X.npy")
-X_ruido = X.copy().reshape(len(X), -1)  # achata pra (N, 120) pra mexer nos pixels
+X_ruido = X.copy().reshape(len(X), -1)
 
 num_invertidos = int(X_ruido.shape[1] * TAXA_RUIDO)
 for imagem in X_ruido:

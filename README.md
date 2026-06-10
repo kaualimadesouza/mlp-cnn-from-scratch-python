@@ -26,7 +26,13 @@ EP_IA_MLP_CNN/
 │   │   ├── entities.py     # Neurônio, Camada, MLP (forward, backprop)
 │   │   ├── teste_de_mesa.py # conferência com o exemplo numérico da professora
 │   │   ├── datasets.py     # carregamento dos datasets
-│   │   ├── saidas.py       # ResultadoExperimento + funções salvar_* (txt/csv/png)
+│   │   ├── resultado.py    # ResultadoExperimento (resultado de um experimento)
+│   │   ├── saidas.py       # funções salvar_* (txt/csv)
+│   │   ├── graficos.py     # gráficos de MSE, matriz de confusão e validação cruzada
+│   │   ├── validacao.py    # validação cruzada (k-fold)
+│   │   ├── busca_parametros.py    # grid search de hiperparâmetros (com tempo de treino)
+│   │   ├── plotar_busca.py        # tabela PNG com o ranking da busca
+│   │   ├── gerar_variacao_autoral.py # gera o teste autoral com ruído
 │   │   ├── config.py       # hiperparâmetros por dataset
 │   │   └── value_objects.py
 │   └── cnn/                # Objetivo 2: CNN
@@ -92,6 +98,11 @@ Pra cada dataset, o MLP gera em `saidas/mlp/<dataset>/`:
 | `saidas_teste.csv`    | classe esperada vs classe predita por amostra |
 | `mse.png`             | gráfico de evolução do MSE (treino + validação) |
 | `matriz_confusao.png` | matriz de confusão em heatmap |
+| `validacao_cruzada.png` | acurácia por fold (só nos datasets com validação cruzada) |
+
+O `caracteres_completo/` tem ainda os artefatos da busca de hiperparâmetros:
+`busca_parametros.csv` (ranking completo, com tempo de treino) e
+`busca_parametros.png` (top 15 em formato de tabela).
 
 ## Datasets (`data/`)
 
@@ -176,7 +187,10 @@ Os hiperparâmetros de cada dataset em `config.py` não foram chutados: para o
 CARACTERES_COMPLETO (o problema mais difícil), rodamos uma **busca em grade**
 (`src/mlp/busca_parametros.py`) cobrindo **125 combinações** — 5 taxas de
 aprendizado × 5 tamanhos de camada oculta × 5 valores de paciência. O resultado
-completo fica em `saidas/mlp/caracteres_completo/busca_parametros.csv`.
+completo fica em `saidas/mlp/caracteres_completo/busca_parametros.csv`, que
+inclui o **tempo de treino** de cada combinação (medido na busca); ao final, a
+busca também gera `busca_parametros.png` com o top 15 do ranking em formato de
+tabela (`src/mlp/plotar_busca.py`).
 
 A combinação escolhida foi **taxa = 0.04, 55 neurônios na camada oculta,
 paciência = 15**, pelos seguintes motivos:

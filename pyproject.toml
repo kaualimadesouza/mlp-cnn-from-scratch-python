@@ -1,7 +1,7 @@
 [project]
 name = "ep-ia-mlp-cnn"
 version = "0.1.0"
-description = "Exercicio Programa IA: MLP + CNN"
+description = "Exercicio Programa IA: MLP"
 requires-python = ">=3.12"
 dependencies = [
     "pytest>=8.0",
