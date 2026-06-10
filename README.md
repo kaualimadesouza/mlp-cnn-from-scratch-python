@@ -1,4 +1,4 @@
-# EP IA: MLP + CNN
+# EP IA: MLP
 
 Trabalho da disciplina **Inteligência Artificial (ACH2016)**, USP EACH, 1º semestre de 2026.
 
